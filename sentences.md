@@ -38,5 +38,3 @@ We can have multiple NPIs
 * Please don't talk like that anyone ever again
 * Can't there be any peace and quiet anywhere?
 * I wasn't ever going there anymore
-
-We created 20 basic examples of sentences with negative polarity to test with our surprisal metric.
