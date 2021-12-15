@@ -33,8 +33,8 @@ Just because we have a negative element does not mean that the NPI is grammatica
 
 We can have multiple NPIs
 * He didn't want to go with anybody anywhere
-* They don't do anything anymore
-* Won't they ever leave anybody alone?
+* They don't complete anything anymore
+* Ashely hopes the church doesn't ever leave anybody alone
 * Please don't talk like that anyone ever again
-* Can't there be any peace and quiet anywhere?
+* Tim wondered why there isn't any peace and quiet anywhere
 * I wasn't ever going there anymore
