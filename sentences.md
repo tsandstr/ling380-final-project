@@ -20,6 +20,23 @@
 * I haven't ever talked to her -- I have ever talked to her
 * They aren't ever excited to talk to anyone -- They are ever excited to talk to anyone
 * I won't talk yet -- I will talk yet
+* I didn't read a single book when I was in the library -- I did read a single book when I was in the library
 * Ashley won't talk to anyone anymore because her presentation isn't over yet -- Ashley will talk to anyone anymore because her presentation is over yet 
+
+Just because we have a negative element does not mean that the NPI is grammatical!
+* Because he was not tired, he was not even sleeping -- Because he was not tired, he was even sleeping
+* They are not hungry, so they didn't eat anymore -- They are not hungry, so they did eat anymore
+* After Kyle didn't go to the party, he thought he wouldn't be friends with anybody -- After Kyle didn't go to the party, he thought he would be friends with anybody
+* Although they weren't even of age, they didn't get charged with any crime -- Although they weren't of age, they did get charged with any crime
+* He wasn't angry anymore, and he didn't ever yell -- He wasn't angry anymore, and he did ever yell
+
+
+We can have multiple NPIs
+* He didn't want to go with anybody anywhere
+* They don't do anything anymore
+* Won't they ever leave anybody alone?
+* Please don't talk like that anyone ever again
+* Can't there be any peace and quiet anywhere?
+* I wasn't ever going there anymore
 
 We created 20 basic examples of sentences with negative polarity to test with our surprisal metric.
