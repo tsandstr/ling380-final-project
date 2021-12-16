@@ -16,20 +16,6 @@ class RNNModel(nn.Module):
                            dropout=dropout)
         self.decoder = nn.Linear(hidden_size, vocab_size)
 
-        # Optionally tie weights as in:
-        # "Using the Output Embedding to Improve Language Models" (Press & Wolf
-        # 2016)
-        # https://arxiv.org/abs/1608.05859
-        # and
-        # "Tying Word Vectors and Word Classifiers: A Loss Framework for
-        # Language Modeling" (Inan et al. 2016)
-        # https://arxiv.org/abs/1611.01462
-        if tie_weights:
-            if hidden_size != input_size:
-                raise ValueError('When using the tied flag, hidden_size must \
-                be equal to emsize')
-            self.decoder.weight = self.encoder.weight
-
         self.init_weights()
 
         self.hidden_size = hidden_size
@@ -46,7 +32,6 @@ class RNNModel(nn.Module):
         output, hidden = self.rnn(emb, hidden)
         output = self.drop(output)
         decoded = self.decoder(output)
-        decoded = decoded.view(-1, self.vocab_size)
         return F.log_softmax(decoded, dim=1), hidden
 
     def init_hidden(self, bsz):
