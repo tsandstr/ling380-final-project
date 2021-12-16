@@ -5,7 +5,7 @@
 \documentclass[11pt]{article}
 
 % Remove the "review" option to generate the final version.
-\usepackage[review]{acl}
+\usepackage{acl}
 
 % Standard package includes
 \usepackage{times}
@@ -50,9 +50,9 @@
 %         Author 3 \\ Address line \\ ... \\ Address line}
 
 \author{Theo Sandstrom \\
-  \texttt{theo.sandstrom@yale.edu} \\\And
+  \texttt{theo.sandstrom@yale.edu} \\
   Trey Skidmore \\
-  \texttt{trey.skidmore@yale.edu} \\\And
+  \texttt{trey.skidmore@yale.edu} \\
   Prastik Mohanraj \\
   \texttt{prastik.mohanraj@yale.edu}}
 
@@ -74,9 +74,17 @@ an ACL bibliography style (\texttt{acl\_natbib.bst}),
 an example bibliography (\texttt{custom.bib}),
 and the bibliography for the ACL Anthology (\texttt{anthology.bib}).
 
-\section{Engines}
+\section{Methods}
+\subsection{Language Models}
+\subsection{Surprisal}
+We asses the ability of an LSTM to predict the distribution of negative polarity items by using the surprisal metric that is defined in Wilcox et. al. (2018). The metric is defined to be the log inverse probability:
+\[S(x_i) = -log_2(p_i|h_{i-1}),\]
+where $x_i$ is the current word, $h_{i-1}$ is the LSTM's hidden state before $x$ and the probability is the softmax activation. The surprisal is measured in bits because we take a base two logarithm.
 
-To produce a PDF file, pdf\LaTeX{} is strongly recommended (over original \LaTeX{} plus dvips+ps2pdf or dvipdf). Xe\LaTeX{} also produces PDF files, and is especially suitable for text in non-Latin scripts.
+A high surprisal metric means that a given word was unexpected in its context. The metric is known to correlate directly with human sentence processing difficulty (Hale, 2001; Levy, 2008; Smith and Levy, 2013). In order to probe the model’s understanding of negative polarity licensing, we will construct a synthetic dataset which contained both grammatical examples, in which negative polarity items are correctly licensed, and ungrammatical examples, in which the licensor is either not present or is not in a c-command relationship with the licensee.
+
+
+
 
 \section{Preamble}
 
