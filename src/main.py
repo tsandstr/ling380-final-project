@@ -13,7 +13,7 @@ import model
 parser = argparse.ArgumentParser(description='Evaluate language model on examples')
 parser.add_argument('--model', type=str, default='lstm.pt',
                     help="location of model to evaluate")
-parser.add_argument('--evaluate', type=str, 
+parser.add_argument('--evaluate', type=str, default='../sentences.txt',
                     help='location of example sentences to evaluate')
 parser.add_argument('--dictionary', type=str, default='dictionary.p',
                     help='location of the dictionary to use')
@@ -41,6 +41,10 @@ with open(args.model, 'rb') as f:
     model.rnn.flatten_parameters()
     model.eval()
 
+def word_to_id(dictionary, word):
+    unk_id = dictionary.word2idx['<unk>']
+    return dictionary.word2idx.get(word, unk_id)
+    
 def read_examples_file_as_tensor(examples, dictionary):
     """Reads a text file with one example sentence on each line, and returns a
     tensor of shape (max_len + 1, num_sentences), where max_len is the length of
@@ -51,7 +55,7 @@ def read_examples_file_as_tensor(examples, dictionary):
         seq_len = 0
         for line in f:
             words = line.split() + ['<eos>']
-            ids = [dictionary.word2idx[w] for w in words]
+            ids = [word_to_id(dictionary, w) for w in words]
             sequences.append(ids)
             if len(words) > seq_len:
                 seq_len = len(words)
@@ -103,6 +107,7 @@ def plot_surprisal(vocab, model, batch):
         
         series = pd.Series(seq_surprisal, seq_words)
         series.plot()
+        plt.xticks(range(len(seq_words)), labels=seq_words)
         plt.show()
 
 
