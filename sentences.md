@@ -3,7 +3,7 @@
 * Bill isn't here yet -- Bill is here yet
 * Jane didn't buy any books -- Jane bought any books
 * He hasn't ever read Moby Dick -- He has ever read Moby Dick
-* I haven't seen the movie in years -- I saw the movie in years
+* I haven't seen the movie in years -- I have seen the movie in years
 * We don't like pasta either -- We like pasta either
 * This isn't right at all -- This is right at all
 * I don't think that anybody will like this -- I think that anybody will like this
@@ -38,3 +38,15 @@ We can have multiple NPIs
 * Please don't talk like that anyone ever again
 * Tim wondered why there isn't any peace and quiet anywhere
 * I wasn't ever going there anymore
+
+Robustness to Intervening Material
+* We don't go to the supermarket anymore. We don't go to the supermarket that is owned by Mark anymore. We don't go down the block to the supermarket that is owned by Mark anymore.
+* Jane didn't buy any books. Jane didn't go to the store and buy any books. Jane didn't go to the neighboring city and enter the store to buy any books.
+* I am not a fan of pizza either. I am not a fan of the soggy and flavorless pizza either. I am not a fan of the soggy and flavorless pizza from the chain restaurant either.
+* I don't understand how the smell offends anybody. I don't understand how the sweet smell of roses and sunshine offends anybody. I don't understand how the sweet smell of roses and sunshine from the room down the hallway offends anybody.
+* He was too exhausted to understand anything. He was too exhausted from a long football practice to understand anything. He was too exhausted from a long football practice in the scorching summer sun to understand anything.
+* I wasn't going with anyone. I wasn't going to attend the dance with anyone. I wasn't going to attend the first formal middle school dance with anyone.
+* There isn't cake anywhere in this city. There isn't cake that reminds me of home anywhere in this city. There isn't moist, chocolately, layered cake that reminds me of home anywhere in this city.
+* I doubt that he did anything to our bags. I doubt that the upstanding bellman that checked us in did anything to our bags. I doubt that the upsatnding bellman that checked us in at the luxury hotel did anything to our bags.
+* Carl can't enjoy the symphony anymore. Carl can't enjoy the syphony that does not play on Tuesdays anymore. Carl can't enojoy the sympony with an obnoxious that does not play on Tuesdays anymore.
+* I don't care for music either. I don't care for music that is full of explitives either. I don't care for music that is full of explitives and loud instrumentals either.
