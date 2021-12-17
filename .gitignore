@@ -6,3 +6,4 @@ src/__pycache__
 *.out
 *.pdf
 auto/
+test.txt
