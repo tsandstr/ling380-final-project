@@ -39,6 +39,7 @@ model = model.RNNModel(len(dictionary), args.embedding_size, args.hidden_size,
 with open(args.model, 'rb') as f:
     model = torch.load(f).to(torch.device("cpu"))
     model.rnn.flatten_parameters()
+    model.eval()
 
 def read_examples_file_as_tensor(examples, dictionary):
     """Reads a text file with one example sentence on each line, and returns a
@@ -68,26 +69,27 @@ def surprisal(model, batch):
     """
     initial_hidden = torch.zeros(args.num_layers, batch.size(0),
                                  args.hidden_size)
-    model_output, _ = model(batch.transpose(0, 1),
-                            (initial_hidden,
-                             initial_hidden))
-    model_output = model_output.transpose(0, 1)
+    with torch.no_grad():
+        model_output, _ = model(batch.transpose(0, 1),
+                                (initial_hidden,
+                                 initial_hidden))
+        model_output = model_output.transpose(0, 1)
 
-    # Throw away the first column, because it has no preceding context.
-    next_word = torch.narrow(batch, 1, 1, batch.size(1) - 1)
-    # Throw away the last column because we don't know what should come next.
-    model_output = torch.narrow(model_output, 1, 0, batch.size(1) - 1)
-
-    # Squeeze and unsqueeze to make dimensions line up
-    next_word = next_word.unsqueeze(-1)
-    next_word_log_prob = torch.gather(model_output, -1, next_word)
-    next_word_log_prob = next_word_log_prob.squeeze()
-
-    # The model returns the natural log of the probability, so we divide by
-    # log(2) to get the log base 2.
-    surprisal = -next_word_log_prob / torch.log(torch.tensor(2))
-    # Set the surprisal of the initial word to be zero
-    surprisal = torch.cat([torch.zeros(surprisal.size(0), 1), surprisal], 1)
+        # Throw away the first column, because it has no preceding context.
+        next_word = torch.narrow(batch, 1, 1, batch.size(1) - 1)
+        # Throw away the last column because we don't know what should come next.
+        model_output = torch.narrow(model_output, 1, 0, batch.size(1) - 1)
+        
+        # Squeeze and unsqueeze to make dimensions line up
+        next_word = next_word.unsqueeze(-1)
+        next_word_log_prob = torch.gather(model_output, -1, next_word)
+        next_word_log_prob = next_word_log_prob.squeeze()
+        
+        # The model returns the natural log of the probability, so we divide by
+        # log(2) to get the log base 2.
+        surprisal = -next_word_log_prob / torch.log(torch.tensor(2))
+        # Set the surprisal of the initial word to be zero
+        surprisal = torch.cat([torch.zeros(surprisal.size(0), 1), surprisal], 1)
 
     return surprisal
 
