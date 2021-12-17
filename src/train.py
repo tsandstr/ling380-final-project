@@ -11,11 +11,11 @@ import model
 
 
 parser = argparse.ArgumentParser(description='LSTM Language Model')
-parser.add_argument('--data', type=str, default='./data/wikipedia',
+parser.add_argument('--data', type=str, default='./data/wikitext-2',
                     help='location of data corpus')
 parser.add_argument('--embedding_size', type=int, default=200,
                     help='size of word embeddings')
-parser.add_argument('--hidden_size', type=int, default=200,
+parser.add_argument('--hidden_size', type=int, default=650,
                     help='number of hidden units per layer')
 parser.add_argument('--num_layers', type=int, default=2,
                     help='number of layers')
@@ -25,7 +25,7 @@ parser.add_argument('--clip', type=float, default=0.25,
                     help='gradient clipping')
 parser.add_argument('--epochs', type=int, default=40,
                     help='upper epoch limit')
-parser.add_argument('--batch_size', type=int, default=20, metavar='N',
+parser.add_argument('--batch_size', type=int, default=128, metavar='N',
                     help='batch size')
 parser.add_argument('--bptt', type=int, default=35,
                     help='sequence length')
