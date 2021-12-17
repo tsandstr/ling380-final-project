@@ -27,6 +27,9 @@ parser.add_argument('--epochs', type=int, default=40,
                     help='upper epoch limit')
 parser.add_argument('--batch_size', type=int, default=128, metavar='N',
                     help='batch size')
+parser.add_argument('--micro_batch_size', type=int, default=32, metavar='N',
+                    help='To save GPU memory, we split up batches into micro\
+                    batches.')
 parser.add_argument('--bptt', type=int, default=35,
                     help='sequence length')
 parser.add_argument('--dropout', type=float, default=0.2,
@@ -46,6 +49,8 @@ parser.add_argument('--dry-run', action='store_true',
 
 args = parser.parse_args()
 
+assert args.batch_size % args.micro_batch_size == 0
+micro_batches_per_batch = args.batch_size // args.micro_batch_size
 
 # Set the random seed manually for reproducibility.
 torch.manual_seed(args.seed)
@@ -84,7 +89,7 @@ def batchify(data, bsz):
     return data.to(device)
 
 eval_batch_size = 10
-train_data = batchify(corpus.train, args.batch_size)
+train_data = batchify(corpus.train, args.micro_batch_size)
 val_data = batchify(corpus.valid, eval_batch_size)
 test_data = batchify(corpus.test, eval_batch_size)
 
@@ -139,7 +144,7 @@ def evaluate(data_source):
             data, targets = get_batch(data_source, i)
             output, hidden = model(data, hidden)
             hidden = repackage_hidden(hidden)
-            total_loss += len(data) * criterion(output, targets).item()
+            total_loss += len(data) * criterion(output.view(-1, ntokens), targets.view(-1)).item()
     return total_loss / (len(data_source) - 1)
 
 
@@ -149,32 +154,36 @@ def train():
     total_loss = 0.
     start_time = time.time()
     ntokens = len(corpus.dictionary)
-    hidden = model.init_hidden(args.batch_size)
-    for batch, i in enumerate(range(0, train_data.size(0) - 1, args.bptt)):
+    hidden = model.init_hidden(args.micro_batch_size)
+    model.zero_grad()
+    for micro_batch, i in enumerate(range(0, train_data.size(0) - 1, args.bptt)):
+        batch = micro_batch // micro_batches_per_batch
         data, targets = get_batch(train_data, i)
         # Starting each batch, we detach the hidden state from how it was
         # previously produced. If we didn't, the model would try backpropagating
         # all the way to start of the dataset.
-        model.zero_grad()
         hidden = repackage_hidden(hidden)
         output, hidden = model(data, hidden)
-        loss = criterion(output, targets)
+        loss = criterion(output.view(-1, ntokens), targets.view(-1))
         loss.backward()
 
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs
         # / LSTMs.
-        torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
-        for p in model.parameters():
-            p.data.add_(p.grad, alpha=-lr)
+        if (micro_batch + 1) % micro_batches_per_batch == 0:
+            torch.nn.utils.clip_grad_norm_(model.parameters(), args.clip)
+            for p in model.parameters():
+                p.data.add_(p.grad, alpha=-lr)
 
-        total_loss += loss.item()
+            total_loss += loss.item()
 
-        if batch % args.log_interval == 0 and batch > 0:
+            model.zero_grad()
+
+        if micro_batch > 0 and micro_batch % (micro_batches_per_batch * args.log_interval) == 0:
             cur_loss = total_loss / args.log_interval
             elapsed = time.time() - start_time
             print('| epoch {:3d} | {:5d}/{:5d} batches | lr {:02.2f} | ms/batch {:5.2f} | '
                     'loss {:5.2f} | ppl {:8.2f}'.format(
-                epoch, batch, len(train_data) // args.bptt, lr,
+                epoch, batch, len(train_data) // (args.bptt * micro_batches_per_batch), lr,
                 elapsed * 1000 / args.log_interval, cur_loss, math.exp(cur_loss)))
             total_loss = 0
             start_time = time.time()
