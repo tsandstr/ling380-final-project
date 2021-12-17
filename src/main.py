@@ -3,6 +3,7 @@ import os
 import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sns
 
 import torch
 import torch.nn as nn
@@ -112,5 +113,6 @@ def plot_surprisal(vocab, model, batch):
 
 
 batch = read_examples_file_as_tensor(args.evaluate, dictionary)
+sns.set()
 plot_surprisal(dictionary, model, batch)
 
