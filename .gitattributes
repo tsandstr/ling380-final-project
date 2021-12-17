@@ -3,3 +3,4 @@
 data/* filter=lfs diff=lfs merge=lfs -text
 src/data/* filter=lfs diff=lfs merge=lfs -text
 src/data/wikitext-103/*.txt filter=lfs diff=lfs merge=lfs -text
+src/data/wikitext-2/*.txt filter=lfs diff=lfs merge=lfs -text
