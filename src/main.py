@@ -2,6 +2,7 @@ import argparse
 import os
 import pickle
 import pandas as pd
+import matplotlib.pyplot as plt
 
 import torch
 import torch.nn as nn
@@ -36,7 +37,7 @@ model = model.RNNModel(len(dictionary), args.embedding_size, args.hidden_size,
                        args.num_layers, args.dropout, args.tied)
 
 with open(args.model, 'rb') as f:
-    model = torch.load(f)
+    model = torch.load(f).to(torch.device("cpu"))
     model.rnn.flatten_parameters()
 
 def read_examples_file_as_tensor(examples, dictionary):
@@ -100,8 +101,9 @@ def plot_surprisal(vocab, model, batch):
         
         series = pd.Series(seq_surprisal, seq_words)
         series.plot()
+        plt.show()
 
 
 batch = read_examples_file_as_tensor(args.evaluate, dictionary)
 plot_surprisal(dictionary, model, batch)
-plt.show()
+
