@@ -75,7 +75,7 @@ As discussed in the introduction, negative polarity items are only grammatically
 \end{exe}
 In this subsection we hope to demonstrate that LSTMs have expectations for negative polarity items. We designed 20 sentences with negaitve polarity items each in a positive and negative context. We expect to see higher surprisal metric in all of the positive context sentences.
 
-The plots of surprisal in Figure 1 are two strong examples of the general trend that we uncovered; negative polarity items are much more surprising to the model when contained positive contexts rather than negative contexts. The negative polarity item in 19 of the 20 base sentences that we created caused higher surprisal when they were placed in a positive context. 
+The plots of surprisal in Figure 1 are two strong examples of the general trend that we uncovered; negative polarity items are much more surprising to the model when contained positive contexts rather than negative contexts. The negative polarity item in 19 of the 20 base sentences that we created were given higher surprisal scores when they were placed in a positive context.
 
 Overall, this experiment shows that our LSTM model has at least a basic understanding of when negative polarity items should be expected.
 
@@ -86,7 +86,7 @@ Overall, this experiment shows that our LSTM model has at least a basic understa
     \qquad
     \subfloat[Grammatical]{{\includegraphics[width=.42\linewidth]{good2} }}
     \subfloat[Ungrammatical]{{\includegraphics[width=.42\linewidth]{bad2} }}
-    \caption{}
+    \caption{Plots of surprisal scores for words in the example sentences. Note that plots (a) and (c) are both contextually negative and plots (b) and (d) are positive. As expected, the surprisal score for the NPIs (\textit{yet} in plots (a) and (b) and \textit{any} in plots (c) and (d)) is much higher in positive contexts.}
     \label{fig:example}
 \end{figure}
 
@@ -95,11 +95,32 @@ Syntactic dependencies are unchanged by the presence intervening material. In th
 \begin{exe}
 \ex
 \begin{xlist}
-\ex We don't go to the supermarket anymore.
-\ex We don't go down the block to the supermarket that is owned by Mark anymore. 
+\ex We do not go to the supermarket anymore.
+\ex We do not go to the supermarket that is owned by Mark anymore.
+\ex We do not go down the block to the supermarket that is owned by Mark anymore. 
 \end{xlist}
 \end{exe}
 We showed in the previous subsection that LSTMs have expectations for negative polarity items, so we attempt to determine whether those expectations remain over intervening material. For this subsection, we designed 10 sentences base sentences with NPI items. Each of the base sentences comes in three varieties: minimal intervening material (enough to make the sentence grammatical), 3-5 words of additional intervening material, and 6-10 additional words between the negative licensor and the polarity item. In all cases the intervening words modify the object of the base sentence.
+
+\begin{figure*}
+    \centering
+    \subfloat[Base Sentence]{{\includegraphics[width=.32\textwidth]{short} }}
+    \subfloat[5 Additional Words]{{\includegraphics[width=.32\textwidth]{medium} }}
+    \subfloat[8 Additional Words]{{\includegraphics[width=.32\textwidth]{long} }}
+    \caption{Plots of surprisal scores for words in the modified sentence. The surprisal score of the negative polarity item \textit{anymore} remains relatively unchanged by the amount of intervening material.}
+\end{figure*}
+
+An example of the results for this section are visualized in Figure 2. We found that in general, there was a weak positive correlation between the number of words in between the word that determined the negative context and the negative polarity item and the surprisal score. However as seen in the plots, the scores are relatively similar, so we can conclude that the model does not consider the NPIs as ungrammatical when the amount of intervening words is long.
+\subsection{Licensing of Negative Polarity Items Between Separate C-Commands}
+Just because one section of a sentence is in a negative context does not mean that it is appropriate to use a negative polarity item in another clause. In the following example, the dependent clause is fixed as negative and the independent clause (which contains the NPI) is varied, so only the first variation is correct:
+\begin{exe}
+\ex
+\begin{xlist}
+\ex Because he was not tired, he was not even sleeping
+\ex [*]{Because he was not tired, he was even sleeping} 
+\end{xlist}
+\end{exe}
+In this subsection we attempt to determine whether LSTMs are capable of understanding syntactic structure with regards to negative polarity items. In order to do this we designed 10 base sentences. Each sentence begins with a negative clause, and the grammatically correct version has a second negative clause and NPI wheras the incorrect version has a second postive clause and NPI. We are motivated to analyze this type of interaction because a model that is well adjusted to NPI should determine that the presence of negative context in a separate c-command does not influence whether it is actually grammatical.
 \subsection{Ability to License Multiple Negative Polarity Items}
 In most cases, a negative context can license multiple negative polarity items.
 \begin{exe}
@@ -110,16 +131,7 @@ In most cases, a negative context can license multiple negative polarity items.
 \end{xlist}
 \end{exe}
 
-\subsection{Licensing of Negative Polarity Items Between Clauses}
-Just because one section of a sentence is in a negative context does not mean that it is appropriate to use a negative polarity item in another clause. In the following example, the dependent clause is fixed as negative and the independent clause (which contains the NPI) is varied, so only the first variation is correct:
-\begin{exe}
-\ex
-\begin{xlist}
-\ex Because he was not tired, he was not even sleeping
-\ex [*]{Because he was not tired, he was even sleeping} 
-\end{xlist}
-\end{exe}
-In this subsection we attempt to determine whether LSTMs are capable of understanding syntactic structure with regards to negative polarity items. In order to do this we designed 10 base sentences. Each sentence begins with a negative clause, and the grammatically correct version has a second negative clause and NPI wheras the incorrect version has a second postive clause and NPI.
+
 \section{Document Body}
 
 
