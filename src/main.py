@@ -183,7 +183,21 @@ def generate_seq(model, dictionary, length):
         result.append(dictionary.idx2word[seq[0, i]])
 
     return result
-        
+
+def continue_seq(model, dictionary, seq, choices):
+    seq = [dictionary.word2idx[w] for w in seq]
+    seq = torch.tensor([seq])
+
+    seq_len = seq.size(-1)
+    hidden = model.init_hidden(seq_len)
+
+    logits = model(seq, hidden)[0]
+    idx = torch.argsort(logits, descending=True)
+    out = idx[:, seq_len - 1, :choices]
+    out = out.squeeze().tolist()
+    out = [dictionary.idx2word[i] for i in out]
+
+    return out
 
 batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
 sns.set()
