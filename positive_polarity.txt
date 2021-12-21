@@ -1,1 +1,20 @@
-
+Bill did buy * some books
+Bill did not buy * some books
+I would * rather be here
+I would not * rather be here
+They are * here already
+They are not * here already
+I did like the film * somewhat
+I did not like the film * somewhat
+Joe does have * some friends
+Joe does not have * some friends
+You would * rather stay home
+You would not * rather stay home
+We can grab * some pizza
+We cannot grab * some pizza
+Can you come home * already
+Can you not come home * already
+I am * somewhat convinced by the argument
+I am not * somewhat convinced by the arguement
+Evan is * already in jail
+Evan is not * already in jail
