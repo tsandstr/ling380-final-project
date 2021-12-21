@@ -53,10 +53,18 @@ def read_examples_file_as_tensor(examples, dictionary):
     number of sentences."""
     with open(examples, 'r', encoding="utf8") as f:
         sequences = []
+        npi_marker_indexes = []
         seq_len = 0
         for line in f:
             words = line.split() + ['<eos>']
-            ids = [word_to_id(dictionary, w) for w in words]
+
+            if '*' not in words:
+                print("Skipping sentence with no NPI marker")
+                continue
+            
+            npi_marker_indexes.append(words.index('*'))
+            
+            ids = [word_to_id(dictionary, w) for w in words if w != '*']
             sequences.append(ids)
             if len(words) > seq_len:
                 seq_len = len(words)
@@ -64,7 +72,7 @@ def read_examples_file_as_tensor(examples, dictionary):
     eos_id = dictionary.word2idx['<eos>']
     sequences = [s + [eos_id] * (seq_len - len(s)) for s in sequences]
     sequences = [torch.tensor(seq).type(torch.int64) for seq in sequences]
-    return torch.stack(sequences)
+    return torch.stack(sequences), npi_marker_indexes
     
 def surprisal(model, batch):
     """Calculates the surprisal for each word (with the first word having
@@ -117,7 +125,21 @@ def plot_surprisal(vocab, model, batch):
         plt.show()
 
 
-batch = read_examples_file_as_tensor(args.evaluate, dictionary)
+def compute_surprisal_on_batch(model, batch, markers):
+    surp = surprisal(model, batch)
+    point_surprisals = []
+    cumulative_surprisals = []
+    for i, sentence in enumerate(batch):
+        marker = markers[i]
+        point_surprisal = surp[i, marker]
+        cumulative_surprisal = 0
+        for j in range(marker, sentence.size(0)):
+            cumulative_surprisal += surp[i, j]
+        point_surprisals.append(point_surprisal)
+        cumulative_surprisals.append(cumulative_surprisal)
+    return point_surprisals, cumulative_surprisals
+
+batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
 sns.set()
 plot_surprisal(dictionary, model, batch)
 
