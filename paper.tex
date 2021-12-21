@@ -2,7 +2,7 @@
 \pdfoutput=1
 % In particular, the hyperref package requires pdfLaTeX in order to break URLs across lines.
 
-\documentclass[11pt]{article}
+\documentclass[11pt, round]{article}
 
 % Remove the "review" option to generate the final version.
 \usepackage{acl}
@@ -14,7 +14,6 @@
 
 \usepackage{graphicx}
 \usepackage{caption}
-\usepackage{subcaption}
 \usepackage{subfig}
 \graphicspath{{./img/}}
 
@@ -32,6 +31,9 @@
 % and will typically save some space.
 \usepackage{microtype}
 
+\usepackage{natbib}
+\bibliographystyle{plainnat}
+
 \title{Do LSTMs Understand the Licensing of Negative Polarity Items?}
 
 \author{Theo Sandstrom \\
@@ -43,39 +45,64 @@
 
 \begin{document}
 \maketitle
-\begin{abstract}
 
+\begin{abstract}
+While LSTMs have proven themselves as powerful tools for language modeling tasks, the extent to which their generalizations are based on underlying syntactic structure remains an open area of inquiry. We focus our investigation on the relationship between negative polarity items and their licensors in English. We probe the model's representation of this relationship by computing the network's surprisal upon encountering NPIs in licensed and unlicensed contexts. We show that...
 \end{abstract}
 
 \section{Introduction}
 
+The development of Recurrent Neural Networks (RNN) has been a recent hallmark of advancements in Natural Language Processing (NLP). The inherent ability for RNNs to learn and internalize a number of linguistic capabilities is evidenced by a large corpus of research in the utilization of RNNs for NLP tasks such as machine translation, language modeling, and syntactic parsing \cite{wilcox-etal-2018-rnn}. However, it is still largely unknown how such networks are able to deduce linguistic information, in that there is comparatively less literature present regarding if networks' success is due to opportunistic surface-pattern-based heuristics or if networks are able to genuinely extract and interpret structural properties, syntactic or semantic, of language from their training data \cite{lakretz2019emergence}.
+
+One subset of RNNs, namely Long Short-Term Memory RNNs (LSTMs), has grown in utility in said extraction of structural properties of language. Wilcox et al. \shortcite{wilcox-etal-2018-rnn} determined utilized LSTM models to explore the syntactic relationship of the filler-gap dependency, the relationship between a filler word (in English, a wh- complementizer like "what" or "when") and a gap word (in English, an empty syntactic position uniquely licensed by a filler word). Lakretz et al. \shortcite{lakretz2019emergence} similarly utilized LSTM models for exploring numerical agreement between verbs and their arguments. 
+
+There is, though, little research investigating the feature of licensing of negative polarity items in language. Negative polarity items are a class of words that are only permitted to appear in certain “negative” contexts. For example, in English, negative polarity items include words like "ever," "any," and "even."
+\begin{enumerate}
+    \item He never gave up.
+    \item *He \textit{ever} gave up.
+    \item Nobody ever gave up.
+\end{enumerate}
+Here, the word "ever" is not permitted to occur in a sentence except when licensed by a word such as "nobody" that provides the surrounding "negative" context. Notably, the relationship between the licensor and the negative polarity item is based on the hierarchical structure of a sentence, wherein the licensor must c-command the negative polarity item (i.e. the negative polarity item must be a sister of the licensor or a direct descendant of a sister node of the licensor).
+
+If a language model, after being trained on a sentence data set implementing the usage of negative polarity licensing, is able to predict the distribution of negative polarity items and the contexts in which they are licensed with significant accuracy, this would be evidence that the model is able to learn this feature of syntax, in particular that it is able to detect a relationship between a licensor and a negative polarity item.
+
 \section{Methods}
 \subsection{Language Models}
+
+For our investigation, we trained a LSTM model on the WikiText-2 dataset \cite{merity2016pointer}, which consists of over 2 million tokens from 600 Wikipedia articles, with a vocabulary size of 33,279. Our LSTM has an embedding layer, assigning 200-dimensional embeddings to each word in the vocabulary, and two recurrent layers, each with 650 hidden units. During training, we use dropout regularization as described in Srivastava et. al. \shortcite{srivastava2014dropout}, with a dropout rate set at 0.2. Optimization was performed using gradient descent, with a base learning rate of 0.2, which we annealed whenever performance did not improve on the development set.
+
 \subsection{Surprisal}
-We asses the ability of an LSTM to predict the distribution of negative polarity items by using the surprisal metric that is defined in Wilcox et. al. (2018). The metric is defined to be the log inverse probability:
-\[S(x_i) = -\log_2 P(x_i\,|\,h_{i-1}),\]
+
+We assess the ability of an LSTM to predict the distribution of negative polarity items by using the surprisal metric that, as used in Wilcox et. al. \shortcite{wilcox-etal-2018-rnn}. The metric is defined to be the log inverse probability:
+\[ S(x_i) = -\log_2 P(x_i \, | \, h_{i-1}), \]
 where $x_i$ is the current word, $h_{i-1}$ is the LSTM's hidden state before $x$ and the probability is given by the softmax activation. The surprisal is measured in bits because we take a base two logarithm.
 
-A high surprisal metric means that a given word was unexpected in its context. The metric is known to correlate directly with human sentence processing difficulty (Hale, 2001; Levy, 2008; Smith and Levy, 2013). In order to probe the model’s understanding of negative polarity licensing, we will construct a synthetic data set which contained both grammatical examples, in which negative polarity items are correctly licensed, and ungrammatical examples, in which the licensor is either not present or is not in a c-command relationship with the licensee.
+A high surprisal metric means that, in its context, a word was predicted with \textit{low} probability, and therefore was unexpected by the model. A direct correlation has been shown between language model surprisal metrics and  human sentence processing difficulty \cite{hale2001probabilistic,levy2008expectation,smith2013effect}. In order to probe the model’s understanding of negative polarity licensing, we construct a synthetic data set which contained both grammatical examples, in which negative polarity items are correctly licensed, and ungrammatical examples, in which the licensor is either not present or is not in a c-command relationship with the licensee.
 
+\subsection{Experimental Design}
 
 \section{Representation of Negative Polarity Items}
+
 Negative polarity items have a variety of properties. Most obviously, they should only be present in negative contexts. They are also immune to intervening material. One negative context can license multiple negative polarity items. Lastly, the negative item must be in the correct syntactic position to license a negative polarity item. In this section we demonstrate that LSTMs have learned these four properties negative polarity items.
 
-\subsection{Detection of Negative Polarity Items}
+\subsection{Licensing of Negative Polarity Items}
+
 As discussed in the introduction, negative polarity items are only grammatically correct in negative contexts. The following examples demonstrate this fact because only the sentences with negative contexts (a,c) are grammatically permissible:
 \begin{exe}
-\ex
+\ex\label{ex:license-1}
 \begin{xlist}
 \ex Bill is not here yet.
 \ex[*]{Bill is here yet.}
+\end{xlist}
+\ex\label{ex:license-2}
+\begin{xlist}
 \ex They hired somebody without any talent.
 \ex[*]{They hired somebody with any talent.}
 \end{xlist}
 \end{exe}
-In this subsection we hope to demonstrate that LSTMs have expectations for negative polarity items. We designed 20 sentences with negaitve polarity items each in a positive and negative context. We expect to see higher surprisal metric in all of the positive context sentences.
+In this subsection, we confirm the hypothesis that surprisal metrics for NPIs are reduced in the presence of an appropriate licensor. We created 20 test items containing negative polarity items. For each item, we constructed two variants: one with a licensor, and one without a licensor, as exemplified in Examples \ref{ex:license-1} and \ref{ex:license-2}.
 
-The plots of surprisal in Figure 1 are two strong examples of the general trend that we uncovered; negative polarity items are much more surprising to the model when contained positive contexts rather than negative contexts. The negative polarity item in 19 of the 20 base sentences that we created were given higher surprisal scores when they were placed in a positive context.
+Plotted in Figure \ref{fig:surprisal-basic-licensing} are graphs of surprisal on two generic examples; negative polarity items are assigned lower surprisal values by the model when they are found in grammatically licit environments. 
 
 Overall, this experiment shows that our LSTM model has at least a basic understanding of when negative polarity items should be expected.
 
@@ -87,7 +114,7 @@ Overall, this experiment shows that our LSTM model has at least a basic understa
     \subfloat[Grammatical]{{\includegraphics[width=.42\linewidth]{good2} }}
     \subfloat[Ungrammatical]{{\includegraphics[width=.42\linewidth]{bad2} }}
     \caption{Plots of surprisal scores for words in the example sentences. Note that plots (a) and (c) are both contextually negative and plots (b) and (d) are positive. As expected, the surprisal score for the NPIs (\textit{yet} in plots (a) and (b) and \textit{any} in plots (c) and (d)) is much higher in positive contexts.}
-    \label{fig:example}
+    \label{fig:surprisal-basic-licensing}
 \end{figure}
 
 \subsection{Robustness of Negative Polarity Items to Intervening Material}
@@ -131,8 +158,8 @@ In most cases, a negative context can license multiple negative polarity items.
 \end{xlist}
 \end{exe}
 
+\section{Results}
 
-\section{Document Body}
-
+\bibliography{sources}
 
 \end{document}
