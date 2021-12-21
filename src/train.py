@@ -129,7 +129,7 @@ def repackage_hidden(h):
 def get_batch(source, i):
     seq_len = min(args.bptt, len(source) - 1 - i)
     data = source[i:i+seq_len]
-    target = source[i+1:i+1+seq_len]
+    target = source[i+1:i+1+seq_len].view(-1)
     return data, target
 
 
@@ -143,8 +143,9 @@ def evaluate(data_source):
         for i in range(0, data_source.size(0) - 1, args.bptt):
             data, targets = get_batch(data_source, i)
             output, hidden = model(data, hidden)
+            output = output.view(-1, ntokens)
+            total_loss += criterion(output, targets, reduction='sum').item()
             hidden = repackage_hidden(hidden)
-            total_loss += len(data) * criterion(output.view(-1, ntokens), targets.view(-1)).item()
     return total_loss / (len(data_source) - 1)
 
 
@@ -164,7 +165,8 @@ def train():
         # all the way to start of the dataset.
         hidden = repackage_hidden(hidden)
         output, hidden = model(data, hidden)
-        loss = criterion(output.view(-1, ntokens), targets.view(-1))
+        output = output.view(-1, ntokens)
+        loss = criterion(output, targets)
         loss.backward()
 
         # `clip_grad_norm` helps prevent the exploding gradient problem in RNNs

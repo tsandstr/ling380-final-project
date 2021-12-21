@@ -167,22 +167,13 @@ def compute_licensing_interaction(surprisal_list):
 
     return results
 
-def generate_seq(model, dictionary, length):
-    seq = ['The', 'moon', 'is', 'a']
-    seq = [dictionary.word2idx[w] for w in seq]
-    seq = torch.tensor([seq])
-    
+def generate_seq(model, dictionary, seed, length):
+    seq = seed.split()
     for i in range(length):
-        hidden = model.init_hidden(i + 5)
-        logits = model(seq, hidden)[0][:, i]
-        out = logits.argmax(dim=-1, keepdims=True)
-        seq = torch.cat([seq, out], dim=-1)
+        next_word = continue_seq(model, dictionary, seq, 2)[0]
+        seq.append(next_word)
         
-    result = []
-    for i in range(seq.size(-1)):
-        result.append(dictionary.idx2word[seq[0, i]])
-
-    return result
+    return seq
 
 def continue_seq(model, dictionary, seq, choices):
     seq = [dictionary.word2idx[w] for w in seq]
@@ -199,7 +190,22 @@ def continue_seq(model, dictionary, seq, choices):
 
     return out
 
+def foo():
+    batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
+    thing = compute_surprisal_on_batch(model, dictionary, batch, npi_markers)
+    thing = compute_licensing_interaction(thing)
+    thing = [j for i, j in thing]
+    return ttest_1samp(thing, 0, alternative='greater')
+
+def bar():
+    batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
+    thing = compute_surprisal_on_batch(model, dictionary, batch, npi_markers)
+    thing = compute_licensing_interaction(thing)
+    thing = [j for i, j in thing]
+    thing = pd.Series(thing)
+    return thing
+    
+    
 batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
 sns.set()
 plot_surprisal(dictionary, model, batch)
-
