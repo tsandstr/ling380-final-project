@@ -56,7 +56,13 @@ def read_examples_file_as_tensor(examples, dictionary):
         npi_marker_indexes = []
         seq_len = 0
         for line in f:
-            words = line.split() + ['<eos>']
+            if not line:
+                continue
+
+            words = ['<bos>'] + line.split() + ['<eos>']
+
+            if words[1] == '#':
+                continue
 
             if '*' not in words:
                 print("Skipping sentence with no NPI marker")
@@ -113,7 +119,7 @@ def plot_surprisal(vocab, model, batch):
         seq_surprisal = surp[i]
         seq_surprisal = seq_surprisal.detach().numpy()
 
-        seq_end = seq.index(vocab.word2idx['<eos>'])
+        seq_end = seq.tolist().index(vocab.word2idx['<eos>']) + 1
         seq = seq[0:seq_end]
         seq_surprisal = seq_surprisal[0:seq_end]
 
@@ -122,22 +128,62 @@ def plot_surprisal(vocab, model, batch):
         series = pd.Series(seq_surprisal, seq_words)
         series.plot()
         plt.xticks(range(len(seq_words)), labels=seq_words)
+
         plt.show()
 
 
-def compute_surprisal_on_batch(model, batch, markers):
+def compute_surprisal_on_batch(model, dictionary, batch, markers):
     surp = surprisal(model, batch)
-    point_surprisals = []
-    cumulative_surprisals = []
-    for i, sentence in enumerate(batch):
+    results = []
+    for i, seq in enumerate(batch):
+        seq_surprisal = surp[i]
         marker = markers[i]
-        point_surprisal = surp[i, marker]
+
+        seq_end = seq.tolist().index(dictionary.word2idx['<eos>']) + 1
+        seq = seq[0:seq_end]
+        seq_surprisal = seq_surprisal[0:seq_end]
+        
+        
+        point_surprisal = surp[i, marker].item()
+
         cumulative_surprisal = 0
-        for j in range(marker, sentence.size(0)):
-            cumulative_surprisal += surp[i, j]
-        point_surprisals.append(point_surprisal)
-        cumulative_surprisals.append(cumulative_surprisal)
-    return point_surprisals, cumulative_surprisals
+        for j in range(marker, seq.size(0)):
+            cumulative_surprisal += surp[i, j].item()
+
+        results.append((point_surprisal, cumulative_surprisal))
+        
+    return results
+
+def compute_licensing_interaction(surprisal_list):
+    good = surprisal_list[::2]
+    bad = surprisal_list[1::2]
+    
+    results = []
+    for i in range(len(good)):
+        good_pnt, good_cum = good[i]
+        bad_pnt, bad_cum = bad[i]
+        
+        results.append(((bad_pnt - good_pnt), (bad_cum - good_cum)))
+
+    return results
+
+def generate_seq(model, dictionary, length):
+    seq = ['The', 'moon', 'is', 'a']
+    seq = [dictionary.word2idx[w] for w in seq]
+    seq = torch.tensor([seq])
+    
+    for i in range(length):
+        hidden = model.init_hidden(i + 5)
+        logits = model(seq, hidden)[0][:, i]
+        out = logits.argmax(dim=-1, keepdims=True)
+        seq = torch.cat([seq, out], dim=-1)
+        
+    result = []
+    for i in range(seq.size(-1)):
+        result.append(dictionary.idx2word[seq[0, i]])
+
+    return result
+        
 
 batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
 sns.set()
