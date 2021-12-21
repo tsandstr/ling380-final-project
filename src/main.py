@@ -104,6 +104,11 @@ def plot_surprisal(vocab, model, batch):
     for i, seq in enumerate(batch):
         seq_surprisal = surp[i]
         seq_surprisal = seq_surprisal.detach().numpy()
+
+        seq_end = seq.index(vocab.word2idx['<eos>'])
+        seq = seq[0:seq_end]
+        seq_surprisal = seq_surprisal[0:seq_end]
+
         seq_words = [vocab.idx2word[word_id] for word_id in seq.tolist()]
         
         series = pd.Series(seq_surprisal, seq_words)
