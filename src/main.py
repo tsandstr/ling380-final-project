@@ -154,7 +154,7 @@ def compute_surprisal_on_batch(model, dictionary, batch, markers):
         
     return results
 
-def compute_licensing_interaction(surprisal_list):
+def compute_licensing_interaction_paired(surprisal_list):
     good = surprisal_list[::2]
     bad = surprisal_list[1::2]
     
@@ -193,14 +193,14 @@ def continue_seq(model, dictionary, seq, choices):
 def foo():
     batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
     thing = compute_surprisal_on_batch(model, dictionary, batch, npi_markers)
-    thing = compute_licensing_interaction(thing)
+    thing = compute_licensing_interaction_paired(thing)
     thing = [j for i, j in thing]
     return ttest_1samp(thing, 0, alternative='greater')
 
 def bar():
     batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
     thing = compute_surprisal_on_batch(model, dictionary, batch, npi_markers)
-    thing = compute_licensing_interaction(thing)
+    thing = compute_licensing_interaction_paired(thing)
     thing = [j for i, j in thing]
     thing = pd.Series(thing)
     return thing
