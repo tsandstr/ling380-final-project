@@ -200,19 +200,19 @@ def foo():
     for i, ((good_pnt, good_cum), (bad_pnt, bad_cum)) in enumerate(zip(good, bad)):
         res = res.append([{'sentence' : i,
                            'measurement' : 'instant',
-                           'licensed' : 'licensed',
+                           'environment' : 'with licensor',
                            'surprisal' : good_pnt},
                           {'sentence' : i,
                            'measurement' : 'instant',
-                           'licensed' : 'unlicensed',
+                           'environment' : 'without licensor',
                            'surprisal' : bad_pnt},
                           {'sentence' : i,
                            'measurement' : 'cumulative',
-                           'licensed' : 'licensed',
+                           'environment' : 'with licensor',
                            'surprisal' : good_cum},
                           {'sentence' : i,
                            'measurement' : 'cumulative',
-                           'licensed' : 'unlicensed',
+                           'environment' : 'without licensor',
                            'surprisal' : bad_cum}])
     #    return ttest_1samp(thing, 0, alternative='greater')
     return res
