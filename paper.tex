@@ -126,7 +126,14 @@ Plotted in Figure \ref{fig:surprisal-basic-licensing} are graphs of surprisal on
     \label{fig:surprisal-basic-licensing}
 \end{figure}
 
-To determine the statistical significance of the surprisal scores of NPIs in different contexts, we computed surprisal scores for both variants of our 20 test items and computed the licensing interaction by taking pairwise differences. If the model had learned nothing at all about the NPI/licensor relation, we would expect the licensing interaction to be zero. However, if the model did learn to predict NPIs only in the presence of a licensor, then the licensing interaction should be positive. 
+To determine the statistical significance of the surprisal scores of NPIs in different contexts, we computed surprisal scores for both variants of our 20 test items and computed the licensing interaction by taking pairwise differences. If the model had learned nothing at all about the NPI/licensor relation, we would expect the licensing interaction to be zero. However, if the model did learn to predict NPIs only in the presence of a licensor, then the licensing interaction should be positive. Our results are plotted in Figure \ref{fig:basic-detection-box-plot}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{surprisal-c-command-box-plot}
+    \caption{Plots of surprisal scores in the presence of a licensor and without a licensor.}
+    \label{fig:basic-detection-box-plot}
+\end{figure}
 
 Measuring instantaneous surprisal upon encountering an NPI, we found a mean licensing interaction of 0.87, which we deemed significant ($t(19 = 1.82$, $p = 0.042$), so we reject the null hypothesis, concluding that the sentences containing a licensor had significantly lower suprisal than those without a licensor.
 
