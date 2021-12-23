@@ -1,7 +1,9 @@
-The boy was & not that hungry * yet
-The boy & was that hungry * yet
+The boy was & not hungry * yet
+The boy & was hungry * yet
 The boy was & not all that hungry * yet
 The boy & was all that hungry * yet
+The boy was & not hungrier than all of his friends were * yet
+The boy & was hungrier than all of his friends were * yet
 The man would & not walk all the way down here for * anybody
 The man & would walk all the way down here for * anybody
 That girl could & not have looked * any happier
@@ -28,3 +30,13 @@ I do & not feel ready to travel that far * yet
 I & do feel ready to travel that far * yet
 He should & never try to do * anything like that again
 He & should try to do * anything like that again
+The dog did & not run for * anybody
+The dog & did run for * anybody
+The dog did & not run to see * anybody
+The dog & did run to see * anybody
+The dog did & not run from the house to see * anybody
+The dog & did run from the house to see * anybody
+The dog did & not run across the yard from the house to see * anybody
+The dog & did run across the yard from the house to see * anybody
+The dog did & not run past the gate across the yard from the house to see * anybody
+The dog & did run past the gate across the yard from the house to see * anybody
