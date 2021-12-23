@@ -209,3 +209,40 @@ def bar():
 batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
 sns.set()
 plot_surprisal(dictionary, model, batch)
+
+
+def read_examples_file_as_tensor_with_licensor(examples, dictionary):
+    """Reads a text file with one example sentence on each line, and returns a
+    tensor of shape (max_len + 1, num_sentences), where max_len is the length of
+    the longest sentence (not including an <eos> token) and num_sentences is the
+    number of sentences."""
+    with open(examples, 'r', encoding="utf8") as f:
+        sequences = []
+        npi_marker_indices = []
+        licensor_indices = []
+        seq_len = 0
+        for line in f:
+            if not line:
+                continue
+
+            words = ['<bos>'] + line.split() + ['<eos>']
+
+            if words[1] == '#':
+                continue
+
+            if '*' not in words or '&' not in words:
+                print("Skipping sentence with missing marker")
+                continue
+            
+            npi_marker_indices.append(words.index('*') - 1)
+            licensor_indices.append(words.index('&'))
+            
+            ids = [word_to_id(dictionary, w) for w in words if w != '*' or w != '&']
+            sequences.append(ids)
+            if len(words) > seq_len:
+                seq_len = len(words)
+
+    eos_id = dictionary.word2idx['<eos>']
+    sequences = [s + [eos_id] * (seq_len - len(s)) for s in sequences]
+    sequences = [torch.tensor(seq).type(torch.int64) for seq in sequences]
+    return torch.stack(sequences), npi_marker_indices, licensor_indices
