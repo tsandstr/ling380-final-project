@@ -193,9 +193,29 @@ def continue_seq(model, dictionary, seq, choices):
 def foo():
     batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
     thing = compute_surprisal_on_batch(model, dictionary, batch, npi_markers)
-    thing = compute_licensing_interaction_paired(thing)
-    thing = [j for i, j in thing]
-    return ttest_1samp(thing, 0, alternative='greater')
+    good = thing[::2]
+    bad = thing[1::2]
+    
+    res = pd.DataFrame()
+    for i, ((good_pnt, good_cum), (bad_pnt, bad_cum)) in enumerate(zip(good, bad)):
+        res = res.append([{'sentence' : i,
+                           'measurement' : 'instant',
+                           'licensed' : 'licensed',
+                           'surprisal' : good_pnt},
+                          {'sentence' : i,
+                           'measurement' : 'instant',
+                           'licensed' : 'unlicensed',
+                           'surprisal' : bad_pnt},
+                          {'sentence' : i,
+                           'measurement' : 'cumulative',
+                           'licensed' : 'licensed',
+                           'surprisal' : good_cum},
+                          {'sentence' : i,
+                           'measurement' : 'cumulative',
+                           'licensed' : 'unlicensed',
+                           'surprisal' : bad_cum}])
+    #    return ttest_1samp(thing, 0, alternative='greater')
+    return res
 
 def bar():
     batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
@@ -205,11 +225,8 @@ def bar():
     thing = pd.Series(thing)
     return thing
     
-    
 batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
 sns.set()
-plot_surprisal(dictionary, model, batch)
-
 
 def read_examples_file_as_tensor_with_licensor(examples, dictionary):
     """Reads a text file with one example sentence on each line, and returns a
