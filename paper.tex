@@ -14,7 +14,7 @@
 
 \usepackage{graphicx}
 \usepackage{caption}
-\usepackage{subfig}
+\usepackage{subcaption}
 \graphicspath{{./img/}}
 
 % For proper rendering and hyphenation of words containing Latin characters (including in bib files)
@@ -59,14 +59,18 @@ However, it is still largely unknown how such networks represent linguistic info
 One subset of RNNs, namely Long Short-Term Memory RNNs (LSTMs), has grown in utility in said extraction of structural properties of language. Wilcox et al. \shortcite{wilcox-etal-2018-rnn} researched the ability of LSTM models to learn the syntactic filler-gap dependency, the relationship between a filler word (in English, a wh- complementizer like \textit{what} or \textit{when}) and a gap word (in English, an empty syntactic position uniquely licensed by a filler word). Lakretz et al. \shortcite{lakretz2019emergence} similarly explored the ability of LSTM models to identify numerical agreement between verbs and their arguments. 
 
 There is, though, little research investigating the feature of licensing of negative polarity items in language. Negative polarity items are a class of words that are only permitted to appear in certain "negative" contexts. For example, in English, negative polarity items include words like \textit{ever}, \textit{any}, and \textit{even}.
-\begin{enumerate}
-    \item He never gave up.
-    \item *He \textit{ever} gave up.
-    \item Nobody ever gave up.
-\end{enumerate}
-Here, the word \textit{ever} is not permitted to occur in a sentence except when licensed by a word such as \textit{nobody} that provides the surrounding "negative" context. Notably, the relationship between the licensor and the negative polarity item is based on the hierarchical structure of a sentence, wherein the licensor must c-command the negative polarity item (i.e. the negative polarity item must be a sister of the licensor or a direct descendant of a sister node of the licensor).
+\begin{exe}
+\ex \begin{xlist}
+\ex \label{ex:example1} The boy did not ever give up.
+\ex[*]{\label{ex:example2} The boy did ever give up.}
+\ex[*]{\label{ex:example3} The boy who did not win did ever give up.}
+\end{xlist}
+\end{exe}
+Considering Examples \ref{ex:example1} and \ref{ex:example2}, we note that the word \textit{ever} is only permitted to occur in a sentence when it is licensed by a word such as \textit{nobody} which provides a ``negative'' context. For this basic example, the relationhip between licensor and NPI would not be a particularly challenging task for a language model to learn; if it doesn't see any negative words in environment, then it won't predict an NPI. 
 
-If a language model after being trained on a generic linguistic data set is able to predict the distribution of negative polarity items and the contexts in which they are licensed with significant accuracy, this would be evidence that the model is able to learn this feature of syntax, in particular that it is able to detect a relationship between a licensor and a negative polarity item.
+However, considering Example \ref{ex:example3}, we see that this simple heuristic fails. Despite the fact that the word \textit{not} preceeds the NPI, the sentence is still ungrammatical. This is because the relationship between the licensor and the negative polarity item is not based on linear word order but rather on the hierarchical structure of a sentence. In particular, for an NPI to be permissible, it must be c-commanded by a licensor. This c-command relation means that the NPI must be a sister of the licensor or a direct descendant of a sister node of the licensor \cite{ladusaw1980notion}.
+
+If a language model after being trained on a generic linguistic data set is able to predict the distribution of negative polarity items accurately, this would be evidence that the model is able to learn this feature of syntax, and in particular, that it represents hierarchical structure with enough fidelity to capture the c-command relation.
 
 \section{Methods}
 
@@ -97,6 +101,7 @@ A large licensing interaction suggests that, in a given test item, the presence 
 In computing the licensing interaction, we measure surprisal in two different ways. First of all, we can measure the instantaneous surprisal of the model upon encountering an NPI. Secondly, we measure cumulative surprisal from the NPI to the end of its clause. We measure instantaneous surprisal because we expect the grammaticality of an NPI to have some local effect on the model's predictions. We measure cumulative surprisal because we expect the grammaticality of an NPI to have longer-reaching effects on the model's predictions for the whole sentence.
 
 \subsection{Licensing of Negative Polarity Items}
+\label{sec:basic}
 
 As discussed in the introduction, negative polarity items are only grammatically allowable in negative contexts. The following examples demonstrate this fact because only the sentences with negative contexts (a,c) are grammatically permissible:
 \begin{exe}
@@ -131,7 +136,7 @@ To determine the statistical significance of the surprisal scores of NPIs in dif
 \begin{figure}
     \centering
     \includegraphics[width=0.5\textwidth]{surprisal-c-command-box-plot}
-    \caption{Plots of surprisal scores in the presence of a licensor and without a licensor.}
+    \caption{Plots of surprisal scores in the presence of a licensor and without a licensor. As expected, surprisal tends to be higher in the environment with no licensor. Interstingly, \textit{median} instantaneous surprisal actually decreases when we include a licensor. However, this does not take into account the fact that our dataset is paired; this is only captured when we apply a $t$-test to the licensing interaction.}
     \label{fig:basic-detection-box-plot}
 \end{figure}
 
@@ -142,30 +147,63 @@ Measuring cumulative surprisal over the remainder of the clause, we found an eve
 Overall, this experiment shows that our LSTM model has at least a basic understanding of when negative polarity items should be expected.
 
 \subsection{C-Command Relation Between Licensor and NPI}
+\label{sec:c-command}
 
 As discussed in the the Introduction, there are structural restrictions on the NPI licensing relationship. For an NPI construction to be grammatical, it is not sufficient that a negative licensor precede the NPI in terms of linear word order. In fact, the licensor must c-command the NPI in order for the construction to be grammatical.
 
-In the following example, the dependent clause is fixed as negative and the independent clause (which contains the NPI) is varied, so only the first variation is correct:
+Consider the sentences in Example \ref{ex:c-command}, each of which contains an embedded clause. In \ref{ex:c-command-nn} there is a negative licensor in both the embedded clause and the main clause, in \ref{ex:c-command-np} there is only a licensor in the embedded clause, in \ref{ex:c-command-pn} there is only a licensor in the main clause, and in \ref{ex:c-command-pp} there is no licensor at all.
+
 \begin{exe}
 \ex
+\label{ex:c-command}
 \begin{xlist}
-\ex Because he was not tired, he was not even sleeping
-\ex [*]{Because he was not tired, he was even sleeping} 
+\ex \label{ex:c-command-nn} That car which had no license plate was not even pulled over
+\ex [*]{\label{ex:c-command-np} That car which had no license plate was even pulled over} 
+\ex \label{ex:c-command-pn} That car which had a license plate was not even pulled over
+\ex [*]{\label{ex:c-command-pp} That car which had a license plate was even pulled over}
 \end{xlist}
 \end{exe}
-In this subsection we attempt to determine whether LSTMs are capable of understanding syntactic structure with regards to negative polarity items. In order to do this we designed 10 base sentences. Each sentence begins with a negative clause, and the grammatically correct version has a second negative clause and NPI wheras the incorrect version has a second postive clause and NPI. We are motivated to analyze this type of interaction because a model that is well adjusted to NPI should determine that the presence of negative context in a separate c-command does not influence whether it is actually grammatical.
 
-\subsection{Robustness of Negative Polarity Items to Intervening Material}
-Syntactic dependencies are unchanged by the presence intervening material. In the following example, the presence of a negative polarity item (anymore) is due to syntactic licensing by negation (don't); modifying the object doesn't change the sentence structure, so it has no effect on NPI licensing:
+In this subsection we attempt to determine whether LSTMs are capable of understanding syntactic structure with regards to negative polarity items. In order to do this we designed 15 test items, each containing an embedded clause and an NPI. For each item, we generated four variants, as exemplified by those in Example \ref{ex:c-command}. If the model has learned that NPIs are only gramatical when they are c-commanded by a licensor, we should expect that the presence of a licensor in the main clause has a significant impact on surprisal, while the presence of a licensor in the embedded clause should not have a significant impact on surpisal. The results are visualized in Figure \ref{fig:c-command-box-plots}.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{point_surprisal_c_command}
+        \caption{Instantaneous surprisal}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.5\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{cummulative_surprisal_c_command}
+        \caption{Cumulative surprisal}
+    \end{subfigure}
+    \caption{Surprisal values for sentences of the form in Example \ref{ex:c-command}. The environment of \ref{ex:c-command-nn} corresponds to the left most column, \ref{ex:c-command-np} corresponds to the third column, \ref{ex:c-command-pn} corresponds to the second column, and \ref{ex:c-command-pp} corresponds to the right most column.}
+    \label{fig:c-command-box-plots}
+\end{figure}
+
+
+To test this hypothesis, we used two-way repeated measures ANOVA to analyze the effect of the embedded licensor and the main licensor on surprisal. The test showed a significant main effect of the main licensor on instantaneous surprisal ($F(1, 14) = 7.90$, $p = 0.014$). It also showed a significant main effect of the embedded licensor on instantaneous surprisal ($F(1, 14) = 8.22$, $p = 0.012$). It did not show any significant interaction between the main licensor and the embedded licensor ($F(1, 14) = 1.87$, $p = 0.193$).
+
+These results tell us two things. First, they support the result of section \ref{sec:basic} that the presence of a licensor in the main clause reduces surprisal. Second, because there is a significant effect of the embedded licensor, we conclude that the model has not learned to generalize based on underlying sentence structure.
+
+\subsection{Robustness to Intervening Material}
+
+Because the relation between licensor and NPI is based on the c-command relation rather than on linear word order, it is not sensitive to the amount of intervening material which occurs between the licensor and the NPI. In Example \ref{ex:intervening}, the NPI \textit{anymore} is licenced by the word \textit{not} in each sentence. The intervening prepositional phrases and relative clauses have no impact on the grammaticality of the sentences.
 \begin{exe}
-\ex
+\ex \label{ex:intervening}
 \begin{xlist}
 \ex We do not go to the supermarket anymore.
 \ex We do not go to the supermarket that is owned by Mark anymore.
 \ex We do not go down the block to the supermarket that is owned by Mark anymore. 
 \end{xlist}
 \end{exe}
-We showed in the previous subsection that LSTMs have expectations for negative polarity items, so we attempt to determine whether those expectations remain over intervening material. For this subsection, we designed 10 sentences base sentences with NPI items. Each of the base sentences comes in three varieties: minimal intervening material (enough to make the sentence grammatical), 3-5 words of additional intervening material, and 6-10 additional words between the negative licensor and the polarity item. In all cases the intervening words modify the object of the base sentence.
+We showed in Section \ref{sec:basic} that LSTMs exhibit significantly higher surprisal when encountering an unlicensed NPI than a licensed NPI; however, the analysis in Section \ref{sec:c-command} suggests that the model is using a heuristic based on linear word order rather than taking into account the hierarchical structure of the sentence. Given this, we might predict that the amount of intervening material could have an impact on surprisal. 
+
+To test the robustness of the model's predictions to intervening material, we first designed 21 test items containing NPIs. In constructing these items, we made sure to vary the amount of intervening material between the licensor and the NPI. Then, for each test item, we constructed two variations: one with a licensor and one without.
+
+We also did a slightly different experiment aiming to control for variation in the semantic content of the sentences. Here, we designed 10 sentences base sentences with NPI items. Each of the base sentences comes in three varieties: minimal intervening material (enough to make the sentence grammatical), 3-5 words of additional intervening material, and 6-10 additional words between the negative licensor and the polarity item. In all cases the intervening words modify the object of the base sentence. An example of the results for this section are visualized in Figure 2.
 
 \begin{figure*}
     \centering
@@ -175,7 +213,7 @@ We showed in the previous subsection that LSTMs have expectations for negative p
     \caption{Plots of surprisal scores for words in the modified sentence. The surprisal score of the negative polarity item \textit{anymore} remains relatively unchanged by the amount of intervening material.}
 \end{figure*}
 
-An example of the results for this section are visualized in Figure 2. We found that in general, there was a weak positive correlation between the number of words in between the word that determined the negative context and the negative polarity item and the surprisal score. However as seen in the plots, the scores are relatively similar, so we can conclude that the model does not consider the NPIs as ungrammatical when the amount of intervening words is long.
+We once again found that there was a weak positive correlation between amount of intervening material and the licensing interaction. However as seen in the plots, the scores are relatively similar. This test supports the notation that the model's ability to predict the the distribution of NPIs is not affected by the quantity of intervening material.
 
 \subsection{Ability to License Multiple Negative Polarity Items}
 In most cases, a negative context can license multiple negative polarity items.
