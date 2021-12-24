@@ -14,7 +14,7 @@ import model
 parser = argparse.ArgumentParser(description='Evaluate language model on examples')
 parser.add_argument('--model', type=str, default='lstm.pt',
                     help="location of model to evaluate")
-parser.add_argument('--evaluate', type=str, default='../sentences.txt',
+parser.add_argument('--evaluate', type=str, default='../experiment_data/sentences.txt',
                     help='location of example sentences to evaluate')
 parser.add_argument('--dictionary', type=str, default='dictionary.p',
                     help='location of the dictionary to use')
