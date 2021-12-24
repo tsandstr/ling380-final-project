@@ -1,7 +1,7 @@
 Bill did buy * some books
 Bill did not buy * some books
-I would * rather be here
-I would not * rather be here
+I would * rather be there
+I would not * rather be there
 They are * here already
 They are not * here already
 I did like the film * somewhat
