@@ -3,7 +3,7 @@
 This repository contains the code and various resources used to complete our
 final project for LING 380. Please note that the repositiory contains some large
 files (containing training data), and as such, `git lfs` must be installed
-(see (https://git-lfs.github.com/)[https://git-lfs.github.com/]).
+(see [https://git-lfs.github.com/](https://git-lfs.github.com/)).
 
 The `paper` directory contains the various `tex` files and images used to
 generate the final writeup.
