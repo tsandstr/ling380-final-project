@@ -217,11 +217,11 @@ def foo():
     #    return ttest_1samp(thing, 0, alternative='greater')
     return res
 
-def bar():
-    batch, npi_markers = read_examples_file_as_tensor(args.evaluate, dictionary)
+def bar(filename = args.evaluate):
+    batch, npi_markers = read_examples_file_as_tensor(filename, dictionary)
     thing = compute_surprisal_on_batch(model, dictionary, batch, npi_markers)
     thing = compute_licensing_interaction_paired(thing)
-    thing = [j for i, j in thing]
+    thing = [i for i, j in thing]
     thing = pd.Series(thing)
     return thing
     
